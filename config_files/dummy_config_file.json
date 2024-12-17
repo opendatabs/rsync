@@ -1,0 +1,7 @@
+{
+  "source": "/local/source/directory/",
+  "destination": "/remote/destination/directory/",
+  "remote_host": "server_name",
+  "ssh_key_path": "/path/to/private/key",
+  "remote_user": "username"
+}
