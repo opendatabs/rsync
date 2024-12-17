@@ -106,8 +106,8 @@ Given the following `example_config.json`:
 ```bash
 docker run -it --rm \
     -v /home/syncuser/.ssh/id_rsa:/root/.ssh/id_rsa:ro \
-    -v /data/dev/workspace/data-processing:/code/data-processing \
-    rsync-automation python3 /code/data-processing/rsync/rsync.py example_config.json
+    -v /data/dev/workspace/rsync:/code/rsync \
+    rsync-automation python3 /code/rsync/rsync.py example_config.json
 ```
 
 ### Result:
