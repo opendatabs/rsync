@@ -1,0 +1,7 @@
+{
+  "source": "/path/to/source/",           // Source directory
+  "destination": "/path/to/destination/", // Remote directory
+  "remote_host": "example.com",           // Remote server hostname or IP
+  "ssh_key_path": "/path/to/id_rsa",      // Path to SSH private key
+  "remote_user": "username"               // Remote server username
+}
