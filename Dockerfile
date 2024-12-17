@@ -12,7 +12,5 @@ RUN mkdir -p /root/.ssh && \
 CMD ["python3", "/code/rsync/sync_files.py"]
 
 # Docker commands to create image and run container:
-# cd rsync
 # docker build --build-arg SERVER_NAMES=server1,server2,server3 -t rsync .
-# cd ..
-# docker run -it --rm -v /home/syncuser/.ssh/id_rsa:/root/.ssh/id_rsa:ro -v /data/dev/workspace/data-processing:/code/data-processing --name rsync rsync python3 -m rsync.sync_files example_config_file.json
+# docker run -it --rm -v /home/syncuser/.ssh/id_rsa:/root/.ssh/id_rsa:ro -v /data/dev/workspace/rsync:/code/rsync --name rsync rsync python3 -m rsync.sync_files example_config_file.json
