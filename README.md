@@ -77,8 +77,8 @@ The configuration file is a JSON object containing the following required fields
    ```bash
    docker run -it --rm \
        -v /path/to/id_rsa:/root/.ssh/id_rsa:ro \
-       -v /path/to/data:/code/rsync \
-       rsync-automation python3 /code/rsync/sync_files.py example_config.json
+       -v /path/to/data:/code \
+       --name rsync rsync python3 rsync.sync_files example_config.json
    ```
 
    - `/path/to/id_rsa`: SSH private key mounted as read-only (`:ro`).
@@ -106,8 +106,8 @@ Given the following `example_config.json`:
 ```bash
 docker run -it --rm \
     -v /home/syncuser/.ssh/id_rsa:/root/.ssh/id_rsa:ro \
-    -v /data/dev/workspace/rsync:/code/rsync \
-    rsync-automation python3 /code/rsync/rsync.py example_config.json
+    -v /data/dev/workspace:/code \
+    --name rsync rsync python3 -m rsync.sync_files example_config.json
 ```
 
 ### Result:
