@@ -19,7 +19,6 @@ def run_rsync(source, destination, remote_host, ssh_key_path, remote_user):
         "rsync",
         "-avz",
         "--no-perms",
-        "--remove-source-files",
         "--omit-dir-times",
         "-e", f"ssh -i {ssh_key_path}",
         source,
