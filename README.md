@@ -57,7 +57,8 @@ The configuration file is a JSON object containing the following required fields
   "destination": "/path/to/destination/", // Remote directory
   "remote_host": "example.com",           // Remote server hostname or IP
   "ssh_key_path": "/path/to/id_rsa",      // Path to SSH private key
-  "remote_user": "username"               // Remote server username
+  "remote_user": "username",              // Remote server username
+  "remove_source_files": true             // Should source files be deleted after processing
 }
 ```
 
@@ -98,7 +99,8 @@ Given the following `example_config.json`:
   "destination": "/remote/data/destination/",
   "remote_host": "example.com",
   "ssh_key_path": "/home/syncuser/.ssh/id_rsa",
-  "remote_user": "syncuser"
+  "remote_user": "syncuser",
+  "remove_source_files": true
 }
 ```
 

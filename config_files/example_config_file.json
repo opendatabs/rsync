@@ -2,6 +2,7 @@
   "source": "/path/to/source/",
   "destination": "/path/to/destination/",
   "remote_host": "example.com",
-  "ssh_key_path": "/path/to/id_rsa"
-  "remote_user": "username"
+  "ssh_key_path": "/path/to/id_rsa",
+  "remote_user": "username",
+  "remove_source_files": true
 }

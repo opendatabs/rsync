@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 
-def run_rsync(source, destination, remote_host, ssh_key_path, remote_user):
+def run_rsync(source, destination, remote_host, ssh_key_path, remote_user, remove_source_files):
     """
     Runs the rsync command to synchronize files to a remote server.
 
@@ -13,6 +13,7 @@ def run_rsync(source, destination, remote_host, ssh_key_path, remote_user):
     :param remote_host: Remote server hostname or IP
     :param ssh_key_path: Path to the SSH private key
     :param remote_user: Remote server username
+    :param remove-source-files: Remove source files after sync
     """
     # Construct the rsync command
     rsync_command = [
@@ -20,6 +21,7 @@ def run_rsync(source, destination, remote_host, ssh_key_path, remote_user):
         "-avz",
         "--no-perms",
         "--omit-dir-times",
+        "--remove-source-files" if remove_source_files else "",
         "-e", f"ssh -i {ssh_key_path}",
         source,
         f"{remote_user}@{remote_host}:{destination}"
@@ -81,9 +83,10 @@ def main():
     remote_host = config["remote_host"]
     ssh_key_path = config["ssh_key_path"]
     remote_user = config["remote_user"]
+    remove_source_files = config.get("remove_source_files", False)
 
     # Run the rsync operation
-    run_rsync(source, destination, remote_host, ssh_key_path, remote_user)
+    run_rsync(source, destination, remote_host, ssh_key_path, remote_user, remove_source_files)
 
 
 if __name__ == "__main__":
