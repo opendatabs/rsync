@@ -83,7 +83,7 @@ def main():
     remote_host = config["remote_host"]
     ssh_key_path = config["ssh_key_path"]
     remote_user = config["remote_user"]
-    remove_source_files = config.get("remove_source_files", False)
+    remove_source_files = config["remove_source_files"]
 
     # Run the rsync operation
     run_rsync(source, destination, remote_host, ssh_key_path, remote_user, remove_source_files)
