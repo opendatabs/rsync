@@ -17,15 +17,16 @@ def run_rsync(source, destination, remote_host, ssh_key_path, remote_user, remov
     """
     # Construct the rsync command
     rsync_command = [
-        "rsync",
-        "-avz",
-        "--no-perms",
-        "--omit-dir-times",
-        "--remove-source-files" if remove_source_files else "",
-        "-e", f"ssh -i {ssh_key_path}",
-        source,
-        f"{remote_user}@{remote_host}:{destination}"
-    ]
+            "rsync",
+            "-avz",
+            "--no-perms",
+            "--omit-dir-times",
+            "-e", f"ssh -i {ssh_key_path}",
+            source,
+            f"{remote_user}@{remote_host}:{destination}"
+        ]
+    if remove_source_files:
+        rsync_command.insert(3, "--remove-source-files")
 
     try:
         # Run the rsync command
