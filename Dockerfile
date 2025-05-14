@@ -1,4 +1,4 @@
-FROM python:3.11-bullseye
+FROM python:3.13-bullseye
 WORKDIR /code
 # Install rsync
 RUN apt-get update && apt-get install -y rsync && rm -rf /var/lib/apt/lists/*
