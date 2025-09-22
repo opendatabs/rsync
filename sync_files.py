@@ -2,9 +2,33 @@ import json
 import os
 import subprocess
 import sys
+import shlex
 
 
-def run_rsync(source, destination, remote_host, ssh_key_path, remote_user, remove_source_files):
+def ensure_known_hosts():
+    ssh_dir = "/root/.ssh"
+    os.makedirs(ssh_dir, exist_ok=True)
+    os.chmod(ssh_dir, 0o700)
+    kh = os.path.join(ssh_dir, "known_hosts")
+    if not os.path.exists(kh):
+        open(kh, "a").close()
+        os.chmod(kh, 0o600)
+    return kh
+
+
+def ssh_keyscan(host, known_hosts_path):
+    try:
+        # capture both RSA/ED25519 if available
+        out = subprocess.check_output(["ssh-keyscan", "-T", "5", "-H", host], text=True, stderr=subprocess.DEVNULL)
+        if out.strip():
+            with open(known_hosts_path, "a") as f:
+                f.write(out)
+    except subprocess.CalledProcessError:
+        # fall back to accept-new below
+        pass
+
+
+def run_rsync(source, destination, host, key_path, user, remove_source_files):
     """
     Runs the rsync command to synchronize files to a remote server.
 
@@ -15,28 +39,28 @@ def run_rsync(source, destination, remote_host, ssh_key_path, remote_user, remov
     :param remote_user: Remote server username
     :param remove-source-files: Remove source files after sync
     """
-    # Construct the rsync command
-    rsync_command = [
-            "rsync",
-            "-avz",
-            "--no-perms",
-            "--omit-dir-times",
-            "-e", f"ssh -i {ssh_key_path}",
-            source,
-            f"{remote_user}@{remote_host}:{destination}"
-        ]
+    kh = ensure_known_hosts()
+    # optional pre-scan:
+    ssh_keyscan(host, kh)
+
+    ssh_opts = [
+        "-i", key_path,
+        "-o", "UserKnownHostsFile=" + kh,
+        "-o", "StrictHostKeyChecking=accept-new"  # auto-add key on first connect if scan failed
+    ]
+    rsync_cmd = [
+        "rsync", "-avz", "--no-perms", "--omit-dir-times",
+        "-e", "ssh " + " ".join(shlex.quote(x) for x in ssh_opts),
+        source, f"{user}@{host}:{destination}"
+    ]
     if remove_source_files:
-        rsync_command.insert(3, "--remove-source-files")
+        rsync_cmd.insert(3, "--remove-source-files")
 
     try:
-        # Run the rsync command
-        result = subprocess.run(rsync_command, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        print("rsync output:")
-        print(result.stdout)
+        res = subprocess.run(rsync_cmd, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print(res.stdout)
     except subprocess.CalledProcessError as e:
-        print("Error running rsync:")
-        print(e.stderr, file=sys.stderr)
-        sys.exit(1)
+        print(e.stderr, file=sys.stderr); sys.exit(1)
 
 
 def load_config(config_path):
