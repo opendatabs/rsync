@@ -16,19 +16,7 @@ def ensure_known_hosts():
     return kh
 
 
-def ssh_keyscan(host, known_hosts_path):
-    try:
-        # capture both RSA/ED25519 if available
-        out = subprocess.check_output(["ssh-keyscan", "-T", "5", "-H", host], text=True, stderr=subprocess.DEVNULL)
-        if out.strip():
-            with open(known_hosts_path, "a") as f:
-                f.write(out)
-    except subprocess.CalledProcessError:
-        # fall back to accept-new below
-        pass
-
-
-def run_rsync(source, destination, host, key_path, user, remove_source_files):
+def run_rsync(source, destination, remote_host, key_path, remote_user, remove_source_files):
     """
     Runs the rsync command to synchronize files to a remote server.
 
@@ -40,8 +28,6 @@ def run_rsync(source, destination, host, key_path, user, remove_source_files):
     :param remove-source-files: Remove source files after sync
     """
     kh = ensure_known_hosts()
-    # optional pre-scan:
-    ssh_keyscan(host, kh)
 
     ssh_opts = [
         "-i", key_path,
@@ -49,9 +35,13 @@ def run_rsync(source, destination, host, key_path, user, remove_source_files):
         "-o", "StrictHostKeyChecking=accept-new"  # auto-add key on first connect if scan failed
     ]
     rsync_cmd = [
-        "rsync", "-avz", "--no-perms", "--omit-dir-times",
+        "rsync", 
+        "-avz", 
+        "--no-perms", 
+        "--omit-dir-times",
         "-e", "ssh " + " ".join(shlex.quote(x) for x in ssh_opts),
-        source, f"{user}@{host}:{destination}"
+        source, 
+        f"{remote_user}@{remote_host}:{destination}"
     ]
     if remove_source_files:
         rsync_cmd.insert(3, "--remove-source-files")
